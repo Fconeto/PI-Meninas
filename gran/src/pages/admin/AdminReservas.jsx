@@ -99,15 +99,15 @@ export default function AdminReservas() {
                     <p className="text-xs text-[#290D04]/40 md:hidden">{r.clienteTelefone}</p>
                   </td>
                   <td className="px-4 py-3 text-sm text-[#290D04]/60 hidden md:table-cell">{r.clienteTelefone || "—"}</td>
-                  <td className="px-4 py-3 text-sm text-[#290D04]">{r.data ? new Date(r.data + "T00:00:00").toLocaleDateString("pt-BR") : "—"}</td>
+                  <td className="px-4 py-3 text-sm text-[#290D04]">{r.data ? new Date(r.data).toLocaleDateString("pt-BR") : "—"}</td>
                   <td className="px-4 py-3 text-sm text-[#290D04] hidden sm:table-cell">{r.horario}</td>
                   <td className="px-4 py-3 text-sm text-[#290D04] capitalize hidden lg:table-cell">{r.tipo}</td>
                   <td className="px-4 py-3 text-sm text-[#290D04] hidden lg:table-cell">{r.quantidadePessoas}</td>
                   <td className="px-4 py-3">
                     <select
-                      value={r.status}
+                      value={r.status?.toLowerCase()}
                       onChange={(e) => handleStatusChange(r.id, e.target.value)}
-                      className={`px-2 py-1 rounded-full text-xs font-interactive font-medium border-0 cursor-pointer ${STATUS_COLORS[r.status]} focus:outline-none`}
+                      className={`px-2 py-1 rounded-full text-xs font-interactive font-medium border-0 cursor-pointer ${STATUS_COLORS[r.status?.toLowerCase()]} focus:outline-none`}
                     >
                       {STATUS_OPTIONS.map((s) => <option key={s} value={s}>{s.charAt(0).toUpperCase() + s.slice(1)}</option>)}
                     </select>

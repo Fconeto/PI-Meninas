@@ -1,8 +1,10 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
+// gran/src/assets/pexels-felipe-vieira-651921657-20066400.jpg
+import Fundo from "@/assets/pexels-felipe-vieira-651921657-20066400.jpg";
 
-const HERO_IMG = "https://media.base44.com/images/public/6a432e114bb86f415a640016/10ae4bd08_generated_a0665fa6.png";
+const HERO_IMG = Fundo;
 
 export default function HeroSection() {
   return (

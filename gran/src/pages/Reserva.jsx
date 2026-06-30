@@ -64,7 +64,7 @@ export default function Reserva() {
       tipo,
       data: form.data,
       horario: form.horario,
-      quantidade_pessoas: Number(form.quantidade_pessoas),
+      quantidadePessoas: Number(form.quantidade_pessoas),
       observacoes: form.observacoes,
       clienteNome: user.fullName || "",
       clienteEmail: user.email || "",

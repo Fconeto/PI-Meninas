@@ -1,8 +1,55 @@
-import React from "react";
+import React, { useEffect } from "react";
+import { settingsService } from "@/api/services";
 import { Link } from "react-router-dom";
 import { Phone, MapPin, Clock, Instagram, Facebook } from "lucide-react";
+import { use } from "react";
+
+/*
+Ex
+{
+"id": 1,
+        "telefone": "(88) 99961-9358",
+        "whatsApp": "(88) 99961-9358",
+        "deliveryUrl": "https://delivery.granforno.com.br",
+        "endereco": "Rua Santos Dumont, 327 - Centro, Crateús 63700034",
+        "horarioFuncionamento": "Terça a Domingo: 11h30 - 15h00 | 18h00 - 23h00",
+        "totalMesas": 20,
+        "capacidadePorMesa": 4,
+        "maxReservasPorHorario": 10,
+        "tempoEntreReservas": 0,
+        "horariosDisponiveis": [
+            "11:30",
+            "12:00",
+            "12:30",
+            "13:00",
+            "13:30",
+            "14:00",
+            "14:30",
+            "18:00",
+            "18:30",
+            "19:00",
+            "19:30",
+            "20:00",
+            "20:30",
+            "21:00",
+            "21:30",
+            "22:00"
+        ],
+        "textoHome": null,
+}
+
+*/
 
 export default function Footer() {
+  const [config, setConfig] = React.useState([]);
+
+  useEffect(() => {
+    settingsService.get({ ativo: true })
+      .then((res) => setConfig(res.data || []))
+      .catch(() => setConfig([]))
+      .finally(() => setLoading(false));
+  }, []);
+
   return (
     <footer className="bg-[#290D04] text-[#FAF3E2]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-20">
@@ -32,15 +79,15 @@ export default function Footer() {
             <div className="space-y-3">
               <div className="flex items-start gap-3">
                 <Phone className="w-4 h-4 mt-0.5 text-[#B68D40]" />
-                <span className="text-sm text-[#FAF3E2]/70">(11) 3456-7890</span>
+                <span className="text-sm text-[#FAF3E2]/70">{config.telefone}</span>
               </div>
               <div className="flex items-start gap-3">
                 <MapPin className="w-4 h-4 mt-0.5 text-[#B68D40]" />
-                <span className="text-sm text-[#FAF3E2]/70">Rua das Oliveiras, 250<br />Vila Madalena, São Paulo - SP</span>
+                <span className="text-sm text-[#FAF3E2]/70">{config.endereco}</span>
               </div>
               <div className="flex items-start gap-3">
                 <Clock className="w-4 h-4 mt-0.5 text-[#B68D40]" />
-                <span className="text-sm text-[#FAF3E2]/70">Terça a Domingo<br />11h30 - 15h00 | 18h00 - 23h00</span>
+                <span className="text-sm text-[#FAF3E2]/70">{config.horarioFuncionamento}</span>
               </div>
             </div>
           </div>

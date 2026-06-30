@@ -7,6 +7,7 @@ import { motion } from "framer-motion";
 import { useToast } from "@/components/ui/use-toast";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import { useAuth } from "@/lib/AuthContext";
+import { use } from "react";
 
 const STATUS_MAP = {
   pendente: { label: "Pendente", color: "bg-amber-100 text-amber-800" },
@@ -37,6 +38,11 @@ export default function Perfil() {
     const diff = reservationDate - now;
     return diff > 24 * 60 * 60 * 1000;
   };
+
+  useEffect(() => {
+    console.log("User:", user);
+    console.log("Reservations:", reservations);
+  }, [user, reservations]);
 
   const handleCancel = async (id) => {
     if (!window.confirm("Tem certeza que deseja cancelar esta reserva?")) return;
@@ -115,7 +121,8 @@ export default function Perfil() {
           ) : (
             <div className="space-y-4">
               {reservations.map((r) => {
-                const status = STATUS_MAP[r.status] || STATUS_MAP.pendente;
+                // toLowerCase
+                const status = STATUS_MAP[r.status?.toLowerCase()] || STATUS_MAP.pendente;
                 return (
                   <div key={r.id} className="p-6 rounded-2xl bg-white/60 border border-[#290D04]/5 hover:shadow-md transition-shadow">
                     <div className="flex items-start justify-between">
@@ -125,7 +132,7 @@ export default function Perfil() {
                           <span className={`px-2.5 py-0.5 rounded-full text-xs font-interactive font-medium ${status.color}`}>{status.label}</span>
                         </div>
                         <p className="text-sm text-[#290D04]/60">
-                          {new Date(r.data + "T00:00:00").toLocaleDateString("pt-BR")} às {r.horario} • {r.quantidadePessoas} pessoa{r.quantidadePessoas > 1 ? "s" : ""}
+                          {new Date(r.data).toLocaleDateString("pt-BR")} às {r.horario} • {r.quantidadePessoas} pessoa{r.quantidadePessoas > 1 ? "s" : ""}
                         </p>
                         {r.observacoes && <p className="text-xs text-[#290D04]/40 mt-1">{r.observacoes}</p>}
                       </div>

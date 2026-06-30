@@ -52,8 +52,9 @@ export default function Contato() {
               </div>
               <div>
                 <h3 className="font-heading text-lg font-semibold text-[#290D04] mb-1">WhatsApp</h3>
+                {/* convert phone number to international format */}
                 <a
-                  href={`https://wa.me/${s.whatsapp || "5511934567890"}`}
+                  href={`https://wa.me/${55 + (s.whatsApp?.replace(/\D/g, "") || "5588999619358")}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-sm text-[#290D04]/70 hover:text-[#25D366] transition-colors"

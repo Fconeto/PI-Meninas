@@ -41,11 +41,11 @@ export default function Navbar() {
   const allLinks = isAdmin ? [...NAV_LINKS, { label: "Dashboard", path: "/dashboard" }] : NAV_LINKS;
 
   return (
-    <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${scrolled ? "bg-[#FAF3E2]/95 backdrop-blur-md shadow-sm" : "bg-transparent"}`}>
+    <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${scrolled ? "bg-[#FAF3E2]/95 backdrop-blur-md shadow-sm" : "bg-[#FAF3E2]/0"}`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 md:h-20">
           <Link to="/" className="flex items-center gap-2">
-            <span className="font-heading text-xl md:text-2xl font-semibold text-[#290D04] tracking-wide">
+            <span className={`font-heading text-xl md:text-2xl font-semibold ${scrolled ? "text-[#290D04]/95" : "text-black"} tracking-wide`}>
               Gran Forno <span className="font-light">&</span> Cozinha
             </span>
           </Link>
@@ -56,7 +56,7 @@ export default function Navbar() {
                 key={link.path}
                 to={link.path}
                 className={`font-interactive text-sm font-medium tracking-wide transition-colors duration-300 hover:text-[#B68D40] ${
-                  location.pathname === link.path ? "text-[#B68D40]" : "text-[#290D04]"
+                  location.pathname === link.path ? "text-[#B68D40]" : scrolled ? "text-[#290D04]/95" : "text-black"
                 }`}
               >
                 {link.label}
@@ -66,7 +66,7 @@ export default function Navbar() {
 
           <div className="hidden md:flex items-center gap-4">
             {user ? (
-              <Link to="/perfil" className="flex items-center gap-2 text-[#290D04] hover:text-[#B68D40] transition-colors">
+              <Link to="/perfil" className={`flex items-center gap-2 ${scrolled ? "text-[#290D04]/95" : "text-black"} hover:text-[#B68D40] transition-colors`}>
                 <User className="w-5 h-5" />
                 <span className="font-interactive text-sm font-medium">{user.fullName || user.email}</span>
               </Link>
@@ -106,12 +106,12 @@ export default function Navbar() {
               ))}
               <div className="pt-4 border-t border-[#290D04]/10">
                 {user ? (
-                  <Link to="/perfil" className="flex items-center gap-2 text-[#290D04] py-2">
+                  <Link to="/perfil" className={`flex items-center gap-2 ${scrolled ? "text-[#290D04]/95" : "text-black"} py-2`}>
                     <User className="w-5 h-5" />
                     <span className="font-interactive text-sm font-medium">{user.fullName || user.email}</span>
                   </Link>
                 ) : (
-                  <Link to="/login" className="flex items-center gap-2 text-[#290D04] py-2 font-interactive text-sm font-medium">
+                  <Link to="/login" className={`flex items-center gap-2 ${scrolled ? "text-[#290D04]/95" : "text-black"} py-2 font-interactive text-sm font-medium`}>
                     <LogIn className="w-4 h-4" />
                     Login
                   </Link>

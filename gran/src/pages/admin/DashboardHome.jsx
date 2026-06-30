@@ -16,6 +16,10 @@ export default function DashboardHome() {
       .finally(() => setLoading(false));
   }, []);
 
+  useEffect(() => {
+    console.log("Dashboard stats:", stats);
+  }, [stats]);
+
   if (loading) return <LoadingSpinner size="lg" className="py-20" />;
   if (!stats) return null;
 
