@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Outlet, Link, useLocation, useNavigate } from "react-router-dom";
-import { base44 } from "@/api/base44Client";
+import { api } from "@/api/client";
 import { LayoutDashboard, UtensilsCrossed, Image, CalendarCheck, Settings, Menu, X, ChevronLeft } from "lucide-react";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
 
@@ -20,12 +20,17 @@ export default function AdminLayout() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    base44.auth.me().then((u) => {
-      if (u.role !== "admin") {
+    const token = api.getToken();
+    if (!token) {
+      navigate("/login");
+      return;
+    }
+    api.get('/auth/me').then((r) => {
+      if (r.data.role !== "Admin") {
         navigate("/");
         return;
       }
-      setUser(u);
+      setUser(r.data);
       setLoading(false);
     }).catch(() => navigate("/login"));
   }, [navigate]);
@@ -89,9 +94,9 @@ export default function AdminLayout() {
             </button>
             <div className="hidden lg:block" />
             <div className="flex items-center gap-3">
-              <span className="text-sm text-[#290D04]/60 font-interactive">{user?.full_name || user?.email}</span>
+              <span className="text-sm text-[#290D04]/60 font-interactive">{user?.fullName || user?.email}</span>
               <div className="w-8 h-8 rounded-full bg-[#B68D40]/20 flex items-center justify-center text-[#B68D40] font-interactive text-xs font-bold">
-                {(user?.full_name || user?.email || "A").charAt(0).toUpperCase()}
+                {(user?.fullName || user?.email || "A").charAt(0).toUpperCase()}
               </div>
             </div>
           </div>

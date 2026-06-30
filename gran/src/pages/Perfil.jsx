@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { base44 } from "@/api/base44Client";
-import { Link } from "react-router-dom";
+import { api } from "@/api/client";
+import { reservationsService } from "@/api/services";
+import { Link, useNavigate } from "react-router-dom";
 import { User, Mail, Phone, Edit2, Calendar, X, LogOut } from "lucide-react";
 import { motion } from "framer-motion";
 import { useToast } from "@/components/ui/use-toast";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
+import { useAuth } from "@/lib/AuthContext";
 
 const STATUS_MAP = {
   pendente: { label: "Pendente", color: "bg-amber-100 text-amber-800" },
@@ -14,21 +16,23 @@ const STATUS_MAP = {
 };
 
 export default function Perfil() {
+  const navigate = useNavigate();
   const { toast } = useToast();
+  const { logout } = useAuth();
   const [user, setUser] = useState(null);
   const [reservations, setReservations] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    base44.auth.me().then((u) => {
-      setUser(u);
-      return base44.entities.Reservation.filter({ created_by_id: u.id }, "-created_date");
-    }).then(setReservations).catch(() => {}).finally(() => setLoading(false));
+    api.get('/auth/me').then((r) => {
+      setUser(r.data);
+      return reservationsService.getMy();
+    }).then((r) => setReservations(r.data || [])).catch(() => {}).finally(() => setLoading(false));
   }, []);
 
   const canCancel = (reservation) => {
     if (reservation.status === "cancelada" || reservation.status === "concluida") return false;
-    const reservationDate = new Date(`${reservation.data}T${reservation.horario}`);
+    const reservationDate = new Date(`${reservation.data.split('T')[0]}T${reservation.horario}`);
     const now = new Date();
     const diff = reservationDate - now;
     return diff > 24 * 60 * 60 * 1000;
@@ -37,7 +41,7 @@ export default function Perfil() {
   const handleCancel = async (id) => {
     if (!window.confirm("Tem certeza que deseja cancelar esta reserva?")) return;
     try {
-      await base44.entities.Reservation.update(id, { status: "cancelada" });
+      await reservationsService.updateStatus(id, "cancelada");
       setReservations((prev) => prev.map((r) => r.id === id ? { ...r, status: "cancelada" } : r));
       toast({ title: "Reserva cancelada com sucesso." });
     } catch {
@@ -45,8 +49,9 @@ export default function Perfil() {
     }
   };
 
-  const handleLogout = () => {
-    base44.auth.logout("/");
+  const handleLogout = async () => {
+    await logout();
+    navigate("/");
   };
 
   if (loading) return <LoadingSpinner size="lg" className="pt-32 pb-20" />;
@@ -75,7 +80,7 @@ export default function Perfil() {
           <div className="space-y-4">
             <div className="flex items-center gap-3">
               <User className="w-4 h-4 text-[#B68D40]" />
-              <span className="text-sm text-[#290D04]/70">{user.full_name || "Não informado"}</span>
+              <span className="text-sm text-[#290D04]/70">{user.fullName || "Não informado"}</span>
             </div>
             <div className="flex items-center gap-3">
               <Mail className="w-4 h-4 text-[#B68D40]" />
@@ -120,7 +125,7 @@ export default function Perfil() {
                           <span className={`px-2.5 py-0.5 rounded-full text-xs font-interactive font-medium ${status.color}`}>{status.label}</span>
                         </div>
                         <p className="text-sm text-[#290D04]/60">
-                          {new Date(r.data + "T00:00:00").toLocaleDateString("pt-BR")} às {r.horario} • {r.quantidade_pessoas} pessoa{r.quantidade_pessoas > 1 ? "s" : ""}
+                          {new Date(r.data + "T00:00:00").toLocaleDateString("pt-BR")} às {r.horario} • {r.quantidadePessoas} pessoa{r.quantidadePessoas > 1 ? "s" : ""}
                         </p>
                         {r.observacoes && <p className="text-xs text-[#290D04]/40 mt-1">{r.observacoes}</p>}
                       </div>

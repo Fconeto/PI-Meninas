@@ -1,20 +1,23 @@
 import React, { useState, useEffect } from "react";
-import { base44 } from "@/api/base44Client";
+import { api } from "@/api/client";
+import { authService } from "@/api/services";
 import { useNavigate } from "react-router-dom";
 import { ChevronLeft } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
+import { useAuth } from "@/lib/AuthContext";
 
 export default function EditarPerfil() {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { updateUser } = useAuth();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [form, setForm] = useState({ full_name: "", phone: "" });
 
   useEffect(() => {
-    base44.auth.me().then((u) => {
-      setForm({ full_name: u.full_name || "", phone: u.phone || "" });
+    api.get('/auth/me').then((r) => {
+      setForm({ full_name: r.data.fullName || "", phone: r.data.phone || "" });
       setLoading(false);
     });
   }, []);
@@ -22,7 +25,8 @@ export default function EditarPerfil() {
   const handleSave = async () => {
     setSaving(true);
     try {
-      await base44.auth.updateMe({ full_name: form.full_name, phone: form.phone });
+      const response = await authService.updateProfile({ fullName: form.full_name, phone: form.phone });
+      updateUser(response.data);
       toast({ title: "Perfil atualizado com sucesso!" });
       navigate("/perfil");
     } catch {

@@ -1,0 +1,12 @@
+C:\Users\Usuario\Documents\Faculdade\PI\backend\src\GranForno.Domain\bin\Debug\net9.0\GranForno.Domain.deps.json
+C:\Users\Usuario\Documents\Faculdade\PI\backend\src\GranForno.Domain\bin\Debug\net9.0\GranForno.Domain.dll
+C:\Users\Usuario\Documents\Faculdade\PI\backend\src\GranForno.Domain\bin\Debug\net9.0\GranForno.Domain.pdb
+C:\Users\Usuario\Documents\Faculdade\PI\backend\src\GranForno.Domain\obj\Debug\net9.0\GranForno.Domain.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Usuario\Documents\Faculdade\PI\backend\src\GranForno.Domain\obj\Debug\net9.0\GranForno.Domain.AssemblyInfoInputs.cache
+C:\Users\Usuario\Documents\Faculdade\PI\backend\src\GranForno.Domain\obj\Debug\net9.0\GranForno.Domain.AssemblyInfo.cs
+C:\Users\Usuario\Documents\Faculdade\PI\backend\src\GranForno.Domain\obj\Debug\net9.0\GranForno.Domain.csproj.CoreCompileInputs.cache
+C:\Users\Usuario\Documents\Faculdade\PI\backend\src\GranForno.Domain\obj\Debug\net9.0\GranForno.Domain.sourcelink.json
+C:\Users\Usuario\Documents\Faculdade\PI\backend\src\GranForno.Domain\obj\Debug\net9.0\GranForno.Domain.dll
+C:\Users\Usuario\Documents\Faculdade\PI\backend\src\GranForno.Domain\obj\Debug\net9.0\refint\GranForno.Domain.dll
+C:\Users\Usuario\Documents\Faculdade\PI\backend\src\GranForno.Domain\obj\Debug\net9.0\GranForno.Domain.pdb
+C:\Users\Usuario\Documents\Faculdade\PI\backend\src\GranForno.Domain\obj\Debug\net9.0\ref\GranForno.Domain.dll

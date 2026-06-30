@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { base44 } from "@/api/base44Client";
+import { productsService } from "@/api/services";
 import { Search } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
@@ -14,8 +14,8 @@ export default function Cardapio() {
   const [search, setSearch] = useState("");
 
   useEffect(() => {
-    base44.entities.Product.filter({ ativo: true })
-      .then(setProducts)
+    productsService.getAll({ ativo: true })
+      .then((res) => setProducts(res.data || []))
       .catch(() => setProducts([]))
       .finally(() => setLoading(false));
   }, []);

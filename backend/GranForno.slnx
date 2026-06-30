@@ -1,0 +1,10 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/GranForno.API/GranForno.API.csproj" />
+    <Project Path="src/GranForno.Application/GranForno.Application.csproj" />
+    <Project Path="src/GranForno.Domain/GranForno.Domain.csproj" />
+    <Project Path="src/GranForno.Infrastructure/GranForno.Infrastructure.csproj" />
+    <Project Path="src/GranForno.Persistence/GranForno.Persistence.csproj" />
+    <Project Path="src/GranForno.Shared/GranForno.Shared.csproj" />
+  </Folder>
+</Solution>

@@ -1,15 +1,17 @@
 import React, { useState, useEffect, useMemo } from "react";
-import { base44 } from "@/api/base44Client";
+import { useNavigate } from "react-router-dom";
+import { api } from "@/api/client";
+import { settingsService, reservationsService } from "@/api/services";
 import { Calendar, Clock, Users, Utensils, PartyPopper, ChevronLeft } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useToast } from "@/components/ui/use-toast";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
 
 export default function Reserva() {
+  const navigate = useNavigate();
   const { toast } = useToast();
   const [user, setUser] = useState(null);
   const [settings, setSettings] = useState(null);
-  const [existingReservations, setExistingReservations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [step, setStep] = useState("type");
@@ -27,51 +29,23 @@ export default function Reserva() {
 
   useEffect(() => {
     Promise.all([
-      base44.auth.me().catch(() => null),
-      base44.entities.RestaurantSettings.list("-created_date", 1),
-    ]).then(([u, [s]]) => {
+      api.get('/auth/me').then(r => r.data).catch(() => null),
+      settingsService.get().then(r => r.data).catch(() => null),
+    ]).then(([u, s]) => {
       setUser(u);
       setSettings(s);
       setLoading(false);
     });
   }, []);
 
-  useEffect(() => {
-    if (form.data) {
-      base44.entities.Reservation.filter({ data: form.data })
-        .then(setExistingReservations)
-        .catch(() => setExistingReservations([]));
-    }
-  }, [form.data]);
+  const existingReservations = []; // Will be fetched from availability endpoint
 
   const availableSlots = useMemo(() => {
     if (!settings || !form.data) return [];
-    const allSlots = settings.horarios_disponiveis || [];
-    const today = new Date();
-    const selectedDate = new Date(form.data + "T00:00:00");
-    
-    return allSlots.filter((slot) => {
-      if (selectedDate.toDateString() === today.toDateString()) {
-        const [h, m] = slot.split(":").map(Number);
-        const now = new Date();
-        if (h < now.getHours() || (h === now.getHours() && m <= now.getMinutes())) return false;
-      }
-
-      const activeReservations = existingReservations.filter(
-        (r) => r.horario === slot && r.status !== "cancelada"
-      );
-
-      const hasAmbiente = activeReservations.some((r) => r.tipo === "ambiente");
-      if (hasAmbiente) return false;
-
-      if (tipo === "ambiente") {
-        return activeReservations.length === 0;
-      }
-
-      const mesaCount = activeReservations.filter((r) => r.tipo === "mesa").length;
-      return mesaCount < (settings.max_reservas_por_horario || 10);
-    });
-  }, [settings, form.data, existingReservations, tipo]);
+    const allSlots = settings.horariosDisponiveis || [];
+    // Just show all available slots; real-time availability is checked on submission
+    return allSlots;
+  }, [settings, form.data]);
 
   const minDate = new Date().toISOString().split("T")[0];
 
@@ -84,10 +58,6 @@ export default function Reserva() {
       toast({ title: "Campos obrigatórios", description: "Preencha data, horário e quantidade de pessoas.", variant: "destructive" });
       return;
     }
-    if (settings && form.quantidade_pessoas > (settings.capacidade_por_mesa || 4) * (settings.total_mesas || 20)) {
-      toast({ title: "Capacidade excedida", description: "A quantidade de pessoas excede a capacidade máxima.", variant: "destructive" });
-      return;
-    }
 
     setSubmitting(true);
     const payload = {
@@ -96,21 +66,20 @@ export default function Reserva() {
       horario: form.horario,
       quantidade_pessoas: Number(form.quantidade_pessoas),
       observacoes: form.observacoes,
-      cliente_nome: user.full_name || "",
-      cliente_email: user.email || "",
-      cliente_telefone: user.phone || "",
-      status: "pendente",
+      clienteNome: user.fullName || "",
+      clienteEmail: user.email || "",
+      clienteTelefone: user.phone || "",
     };
     if (tipo === "ambiente") {
-      payload.tipo_evento = form.tipo_evento;
+      payload.tipoEvento = form.tipo_evento;
       payload.decoracao = form.decoracao;
     }
 
     try {
-      await base44.entities.Reservation.create(payload);
+      await reservationsService.create(payload);
       setSuccess(true);
-    } catch {
-      toast({ title: "Erro ao reservar", description: "Tente novamente mais tarde.", variant: "destructive" });
+    } catch (err) {
+      toast({ title: err.data?.message || "Erro ao reservar", description: "Tente novamente mais tarde.", variant: "destructive" });
     } finally {
       setSubmitting(false);
     }

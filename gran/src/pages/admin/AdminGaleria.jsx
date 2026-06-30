@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { base44 } from "@/api/base44Client";
+import { galleryService, uploadService } from "@/api/services";
 import { Plus, Edit2, Trash2, X } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
@@ -18,8 +18,8 @@ export default function AdminGaleria() {
 
   const load = () => {
     setLoading(true);
-    base44.entities.GalleryImage.list("-created_date")
-      .then(setImages)
+    galleryService.getAll()
+      .then((res) => setImages(res.data || []))
       .catch(() => {})
       .finally(() => setLoading(false));
   };
@@ -37,18 +37,18 @@ export default function AdminGaleria() {
       if (modal === "create" && files.length > 1) {
         const urls = [];
         for (const file of files) {
-          const { file_url } = await base44.integrations.Core.UploadFile({ file });
-          urls.push(file_url);
+          const response = await uploadService.upload(file);
+          urls.push(response.data.fileUrl);
         }
         for (const url of urls) {
-          await base44.entities.GalleryImage.create({ titulo: "Nova Imagem", categoria: form.categoria, imagem: url });
+          await galleryService.create({ titulo: "Nova Imagem", categoria: form.categoria, imagem: url });
         }
         toast({ title: `${urls.length} imagens adicionadas!` });
         setModal(null);
         load();
       } else {
-        const { file_url } = await base44.integrations.Core.UploadFile({ file: files[0] });
-        setForm({ ...form, imagem: file_url });
+        const response = await uploadService.upload(files[0]);
+        setForm({ ...form, imagem: response.data.fileUrl });
       }
     } catch {
       toast({ title: "Erro ao enviar imagem.", variant: "destructive" });
@@ -65,10 +65,10 @@ export default function AdminGaleria() {
     setSaving(true);
     try {
       if (modal === "create") {
-        await base44.entities.GalleryImage.create(form);
+        await galleryService.create(form);
         toast({ title: "Imagem adicionada!" });
       } else {
-        await base44.entities.GalleryImage.update(form.id, form);
+        await galleryService.update(form.id, form);
         toast({ title: "Imagem atualizada!" });
       }
       setModal(null);
@@ -83,7 +83,7 @@ export default function AdminGaleria() {
   const handleDelete = async (id) => {
     if (!window.confirm("Tem certeza que deseja excluir esta imagem?")) return;
     try {
-      await base44.entities.GalleryImage.delete(id);
+      await galleryService.delete(id);
       toast({ title: "Imagem excluída." });
       load();
     } catch {

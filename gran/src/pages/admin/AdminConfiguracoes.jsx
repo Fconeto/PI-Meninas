@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { base44 } from "@/api/base44Client";
+import { settingsService } from "@/api/services";
 import { Plus, X } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
@@ -12,8 +12,8 @@ export default function AdminConfiguracoes() {
   const [newHorario, setNewHorario] = useState("");
 
   useEffect(() => {
-    base44.entities.RestaurantSettings.list("-created_date", 1)
-      .then(([s]) => setSettings(s || {}))
+    settingsService.get()
+      .then((res) => setSettings(res.data || {}))
       .catch(() => {})
       .finally(() => setLoading(false));
   }, []);
@@ -21,13 +21,8 @@ export default function AdminConfiguracoes() {
   const handleSave = async () => {
     setSaving(true);
     try {
-      const { id, created_date, updated_date, created_by_id, ...data } = settings;
-      if (id) {
-        await base44.entities.RestaurantSettings.update(id, data);
-      } else {
-        const created = await base44.entities.RestaurantSettings.create(data);
-        setSettings(created);
-      }
+      const { id, ...data } = settings;
+      await settingsService.update(data);
       toast({ title: "Configurações salvas!" });
     } catch {
       toast({ title: "Erro ao salvar.", variant: "destructive" });
@@ -38,14 +33,14 @@ export default function AdminConfiguracoes() {
 
   const addHorario = () => {
     if (!newHorario) return;
-    const current = settings.horarios_disponiveis || [];
+    const current = settings.horariosDisponiveis || [];
     if (current.includes(newHorario)) return;
-    setSettings({ ...settings, horarios_disponiveis: [...current, newHorario].sort() });
+    setSettings({ ...settings, horariosDisponiveis: [...current, newHorario].sort() });
     setNewHorario("");
   };
 
   const removeHorario = (h) => {
-    setSettings({ ...settings, horarios_disponiveis: (settings.horarios_disponiveis || []).filter((x) => x !== h) });
+    setSettings({ ...settings, horariosDisponiveis: (settings.horariosDisponiveis || []).filter((x) => x !== h) });
   };
 
   if (loading) return <LoadingSpinner size="lg" className="py-20" />;
@@ -62,27 +57,27 @@ export default function AdminConfiguracoes() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
               <label className="block text-sm font-interactive font-medium text-[#290D04]/80 mb-1">Total de Mesas</label>
-              <input type="number" value={s.total_mesas || ""} onChange={(e) => setSettings({ ...s, total_mesas: Number(e.target.value) })} className="w-full px-4 py-2.5 rounded-xl bg-[#FAF3E2] border border-[#290D04]/10 text-sm focus:outline-none focus:ring-2 focus:ring-[#B68D40]/50" />
+              <input type="number" value={s.totalMesas || ""} onChange={(e) => setSettings({ ...s, totalMesas: Number(e.target.value) })} className="w-full px-4 py-2.5 rounded-xl bg-[#FAF3E2] border border-[#290D04]/10 text-sm focus:outline-none focus:ring-2 focus:ring-[#B68D40]/50" />
             </div>
             <div>
               <label className="block text-sm font-interactive font-medium text-[#290D04]/80 mb-1">Capacidade/Mesa</label>
-              <input type="number" value={s.capacidade_por_mesa || ""} onChange={(e) => setSettings({ ...s, capacidade_por_mesa: Number(e.target.value) })} className="w-full px-4 py-2.5 rounded-xl bg-[#FAF3E2] border border-[#290D04]/10 text-sm focus:outline-none focus:ring-2 focus:ring-[#B68D40]/50" />
+              <input type="number" value={s.capacidadePorMesa || ""} onChange={(e) => setSettings({ ...s, capacidadePorMesa: Number(e.target.value) })} className="w-full px-4 py-2.5 rounded-xl bg-[#FAF3E2] border border-[#290D04]/10 text-sm focus:outline-none focus:ring-2 focus:ring-[#B68D40]/50" />
             </div>
             <div>
               <label className="block text-sm font-interactive font-medium text-[#290D04]/80 mb-1">Máx. Reservas/Horário</label>
-              <input type="number" value={s.max_reservas_por_horario || ""} onChange={(e) => setSettings({ ...s, max_reservas_por_horario: Number(e.target.value) })} className="w-full px-4 py-2.5 rounded-xl bg-[#FAF3E2] border border-[#290D04]/10 text-sm focus:outline-none focus:ring-2 focus:ring-[#B68D40]/50" />
+              <input type="number" value={s.maxReservasPorHorario || ""} onChange={(e) => setSettings({ ...s, maxReservasPorHorario: Number(e.target.value) })} className="w-full px-4 py-2.5 rounded-xl bg-[#FAF3E2] border border-[#290D04]/10 text-sm focus:outline-none focus:ring-2 focus:ring-[#B68D40]/50" />
             </div>
           </div>
           <div>
             <label className="block text-sm font-interactive font-medium text-[#290D04]/80 mb-1">Tempo entre Reservas (min)</label>
-            <input type="number" value={s.tempo_entre_reservas || ""} onChange={(e) => setSettings({ ...s, tempo_entre_reservas: Number(e.target.value) })} className="w-full md:w-48 px-4 py-2.5 rounded-xl bg-[#FAF3E2] border border-[#290D04]/10 text-sm focus:outline-none focus:ring-2 focus:ring-[#B68D40]/50" />
+            <input type="number" value={s.tempoEntreReservas || ""} onChange={(e) => setSettings({ ...s, tempoEntreReservas: Number(e.target.value) })} className="w-full md:w-48 px-4 py-2.5 rounded-xl bg-[#FAF3E2] border border-[#290D04]/10 text-sm focus:outline-none focus:ring-2 focus:ring-[#B68D40]/50" />
           </div>
         </div>
 
         <div className="p-8 rounded-2xl bg-white/60 border border-[#290D04]/5 space-y-5">
           <h2 className="font-heading text-xl font-semibold text-[#290D04]">Horários Disponíveis</h2>
           <div className="flex flex-wrap gap-2">
-            {(s.horarios_disponiveis || []).map((h) => (
+            {(s.horariosDisponiveis || []).map((h) => (
               <span key={h} className="flex items-center gap-1 px-3 py-1.5 rounded-full bg-[#B68D40]/10 text-[#290D04] text-sm font-interactive">
                 {h}
                 <button onClick={() => removeHorario(h)} className="text-[#290D04]/40 hover:text-red-500 transition-colors">
@@ -113,7 +108,7 @@ export default function AdminConfiguracoes() {
           </div>
           <div>
             <label className="block text-sm font-interactive font-medium text-[#290D04]/80 mb-1">URL Delivery</label>
-            <input type="url" value={s.delivery_url || ""} onChange={(e) => setSettings({ ...s, delivery_url: e.target.value })} className="w-full px-4 py-2.5 rounded-xl bg-[#FAF3E2] border border-[#290D04]/10 text-sm focus:outline-none focus:ring-2 focus:ring-[#B68D40]/50" />
+            <input type="url" value={s.deliveryUrl || ""} onChange={(e) => setSettings({ ...s, deliveryUrl: e.target.value })} className="w-full px-4 py-2.5 rounded-xl bg-[#FAF3E2] border border-[#290D04]/10 text-sm focus:outline-none focus:ring-2 focus:ring-[#B68D40]/50" />
           </div>
           <div>
             <label className="block text-sm font-interactive font-medium text-[#290D04]/80 mb-1">Endereço</label>
@@ -121,7 +116,7 @@ export default function AdminConfiguracoes() {
           </div>
           <div>
             <label className="block text-sm font-interactive font-medium text-[#290D04]/80 mb-1">Horário de Funcionamento</label>
-            <input type="text" value={s.horario_funcionamento || ""} onChange={(e) => setSettings({ ...s, horario_funcionamento: e.target.value })} className="w-full px-4 py-2.5 rounded-xl bg-[#FAF3E2] border border-[#290D04]/10 text-sm focus:outline-none focus:ring-2 focus:ring-[#B68D40]/50" />
+            <input type="text" value={s.horarioFuncionamento || ""} onChange={(e) => setSettings({ ...s, horarioFuncionamento: e.target.value })} className="w-full px-4 py-2.5 rounded-xl bg-[#FAF3E2] border border-[#290D04]/10 text-sm focus:outline-none focus:ring-2 focus:ring-[#B68D40]/50" />
           </div>
         </div>
 

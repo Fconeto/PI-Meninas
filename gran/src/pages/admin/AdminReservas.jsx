@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { base44 } from "@/api/base44Client";
+import { reservationsService } from "@/api/services";
 import { Search, Filter } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
@@ -23,8 +23,8 @@ export default function AdminReservas() {
 
   const load = () => {
     setLoading(true);
-    base44.entities.Reservation.list("-created_date")
-      .then(setReservations)
+    reservationsService.getAll()
+      .then((res) => setReservations(res.data || []))
       .catch(() => {})
       .finally(() => setLoading(false));
   };
@@ -33,7 +33,7 @@ export default function AdminReservas() {
 
   const handleStatusChange = async (id, newStatus) => {
     try {
-      await base44.entities.Reservation.update(id, { status: newStatus });
+      await reservationsService.updateStatus(id, newStatus);
       setReservations((prev) => prev.map((r) => r.id === id ? { ...r, status: newStatus } : r));
       toast({ title: `Status atualizado para ${newStatus}.` });
     } catch {
@@ -42,10 +42,10 @@ export default function AdminReservas() {
   };
 
   const filtered = reservations.filter((r) => {
-    const matchSearch = !search || (r.cliente_nome || "").toLowerCase().includes(search.toLowerCase()) || (r.cliente_email || "").toLowerCase().includes(search.toLowerCase());
+    const matchSearch = !search || (r.clienteNome || "").toLowerCase().includes(search.toLowerCase()) || (r.clienteEmail || "").toLowerCase().includes(search.toLowerCase());
     const matchStatus = !filterStatus || r.status === filterStatus;
     const matchTipo = !filterTipo || r.tipo === filterTipo;
-    const matchDate = !filterDate || r.data === filterDate;
+    const matchDate = !filterDate || r.data.split('T')[0] === filterDate;
     return matchSearch && matchStatus && matchTipo && matchDate;
   });
 
@@ -95,14 +95,14 @@ export default function AdminReservas() {
               {filtered.map((r) => (
                 <tr key={r.id} className="bg-white/40 hover:bg-white/70 transition-colors">
                   <td className="px-4 py-3">
-                    <p className="text-sm font-medium text-[#290D04]">{r.cliente_nome || "—"}</p>
-                    <p className="text-xs text-[#290D04]/40 md:hidden">{r.cliente_telefone}</p>
+                    <p className="text-sm font-medium text-[#290D04]">{r.clienteNome || "—"}</p>
+                    <p className="text-xs text-[#290D04]/40 md:hidden">{r.clienteTelefone}</p>
                   </td>
-                  <td className="px-4 py-3 text-sm text-[#290D04]/60 hidden md:table-cell">{r.cliente_telefone || "—"}</td>
+                  <td className="px-4 py-3 text-sm text-[#290D04]/60 hidden md:table-cell">{r.clienteTelefone || "—"}</td>
                   <td className="px-4 py-3 text-sm text-[#290D04]">{r.data ? new Date(r.data + "T00:00:00").toLocaleDateString("pt-BR") : "—"}</td>
                   <td className="px-4 py-3 text-sm text-[#290D04] hidden sm:table-cell">{r.horario}</td>
                   <td className="px-4 py-3 text-sm text-[#290D04] capitalize hidden lg:table-cell">{r.tipo}</td>
-                  <td className="px-4 py-3 text-sm text-[#290D04] hidden lg:table-cell">{r.quantidade_pessoas}</td>
+                  <td className="px-4 py-3 text-sm text-[#290D04] hidden lg:table-cell">{r.quantidadePessoas}</td>
                   <td className="px-4 py-3">
                     <select
                       value={r.status}

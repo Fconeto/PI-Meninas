@@ -4,7 +4,6 @@ import { queryClientInstance } from '@/lib/query-client'
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import PageNotFound from './lib/PageNotFound';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
-import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import ScrollToTop from './components/ScrollToTop';
 
 import PublicLayout from '@/components/layout/PublicLayout';
@@ -25,20 +24,14 @@ import AdminReservas from '@/pages/admin/AdminReservas';
 import AdminConfiguracoes from '@/pages/admin/AdminConfiguracoes';
 
 const AuthenticatedApp = () => {
-  const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
+  const { isLoadingAuth } = useAuth();
 
-  if (isLoadingPublicSettings || isLoadingAuth) {
+  if (isLoadingAuth) {
     return (
       <div className="fixed inset-0 flex items-center justify-center bg-[#FAF3E2]">
         <div className="w-8 h-8 border-2 border-[#290D04]/20 border-t-[#B68D40] rounded-full animate-spin"></div>
       </div>
     );
-  }
-
-  if (authError) {
-    if (authError.type === 'user_not_registered') {
-      return <UserNotRegisteredError />;
-    }
   }
 
   return (
@@ -68,7 +61,6 @@ const AuthenticatedApp = () => {
     </Routes>
   );
 };
-
 
 function App() {
   return (

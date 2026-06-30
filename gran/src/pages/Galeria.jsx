@@ -1,21 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { base44 } from "@/api/base44Client";
+import { galleryService } from "@/api/services";
 import { X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
 
 const CATEGORIES = ["Todos", "Ambiente", "Pratos", "Eventos", "Equipe", "Detalhes"];
-
-const FALLBACK_IMAGES = [
-  { id: 1, imagem: "https://media.base44.com/images/public/6a432e114bb86f415a640016/bbb0c4a93_generated_23d13209.png", titulo: "Pasta Artesanal", categoria: "Pratos" },
-  { id: 2, imagem: "https://media.base44.com/images/public/6a432e114bb86f415a640016/9488d29d2_generated_1e103989.png", titulo: "Tiramisù Clássico", categoria: "Pratos" },
-  { id: 3, imagem: "https://media.base44.com/images/public/6a432e114bb86f415a640016/59551f141_generated_5da9cc9d.png", titulo: "Nosso Salão", categoria: "Ambiente" },
-  { id: 4, imagem: "https://media.base44.com/images/public/6a432e114bb86f415a640016/09ca9fdae_generated_bab7d7bf.png", titulo: "Tagliata Premium", categoria: "Pratos" },
-  { id: 5, imagem: "https://media.base44.com/images/public/6a432e114bb86f415a640016/10dc5caeb_generated_86b8b615.png", titulo: "Bruschetta", categoria: "Pratos" },
-  { id: 6, imagem: "https://media.base44.com/images/public/6a432e114bb86f415a640016/0930cbaa2_generated_5381308e.png", titulo: "Seleção de Vinhos", categoria: "Detalhes" },
-  { id: 7, imagem: "https://media.base44.com/images/public/6a432e114bb86f415a640016/1ec08be24_generated_526d99c6.png", titulo: "Massa Fresca", categoria: "Pratos" },
-  { id: 8, imagem: "https://media.base44.com/images/public/6a432e114bb86f415a640016/aae2ae6f0_generated_c634d1d0.png", titulo: "Forno a Lenha", categoria: "Detalhes" },
-];
 
 export default function Galeria() {
   const [images, setImages] = useState([]);
@@ -24,9 +13,9 @@ export default function Galeria() {
   const [lightbox, setLightbox] = useState(null);
 
   useEffect(() => {
-    base44.entities.GalleryImage.list("-created_date")
-      .then((data) => setImages(data.length > 0 ? data : FALLBACK_IMAGES))
-      .catch(() => setImages(FALLBACK_IMAGES))
+    galleryService.getAll()
+      .then((res) => setImages(res.data || []))
+      .catch(() => setImages([]))
       .finally(() => setLoading(false));
   }, []);
 

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Menu, X, User, LogIn } from "lucide-react";
-import { base44 } from "@/api/base44Client";
+import { api } from "@/api/client";
 import { motion, AnimatePresence } from "framer-motion";
 
 const NAV_LINKS = [
@@ -19,8 +19,13 @@ export default function Navbar() {
   const location = useLocation();
 
   useEffect(() => {
-    base44.auth.me().then(setUser).catch(() => setUser(null));
-  }, []);
+    const token = api.getToken();
+    if (token) {
+      api.get('/auth/me').then(r => setUser(r.data)).catch(() => setUser(null));
+    } else {
+      setUser(null);
+    }
+  }, [location.pathname]);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
@@ -32,7 +37,7 @@ export default function Navbar() {
     setMobileOpen(false);
   }, [location.pathname]);
 
-  const isAdmin = user?.role === "admin";
+  const isAdmin = user?.role === "Admin";
   const allLinks = isAdmin ? [...NAV_LINKS, { label: "Dashboard", path: "/dashboard" }] : NAV_LINKS;
 
   return (
@@ -63,7 +68,7 @@ export default function Navbar() {
             {user ? (
               <Link to="/perfil" className="flex items-center gap-2 text-[#290D04] hover:text-[#B68D40] transition-colors">
                 <User className="w-5 h-5" />
-                <span className="font-interactive text-sm font-medium">{user.full_name || user.email}</span>
+                <span className="font-interactive text-sm font-medium">{user.fullName || user.email}</span>
               </Link>
             ) : (
               <Link to="/login" className="flex items-center gap-2 bg-[#290D04] text-[#FAF3E2] px-5 py-2 rounded-full font-interactive text-sm font-medium hover:bg-[#3D1A0C] transition-colors">
@@ -103,7 +108,7 @@ export default function Navbar() {
                 {user ? (
                   <Link to="/perfil" className="flex items-center gap-2 text-[#290D04] py-2">
                     <User className="w-5 h-5" />
-                    <span className="font-interactive text-sm font-medium">{user.full_name || user.email}</span>
+                    <span className="font-interactive text-sm font-medium">{user.fullName || user.email}</span>
                   </Link>
                 ) : (
                   <Link to="/login" className="flex items-center gap-2 text-[#290D04] py-2 font-interactive text-sm font-medium">

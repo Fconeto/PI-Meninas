@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { base44 } from "@/api/base44Client";
+import { productsService, uploadService } from "@/api/services";
 import { Plus, Edit2, Trash2, X, Search } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
@@ -19,8 +19,8 @@ export default function AdminProdutos() {
 
   const load = () => {
     setLoading(true);
-    base44.entities.Product.list("-created_date")
-      .then(setProducts)
+    productsService.getAll()
+      .then((res) => setProducts(res.data || []))
       .catch(() => {})
       .finally(() => setLoading(false));
   };
@@ -35,8 +35,8 @@ export default function AdminProdutos() {
     if (!file) return;
     setUploading(true);
     try {
-      const { file_url } = await base44.integrations.Core.UploadFile({ file });
-      setForm({ ...form, imagem: file_url });
+      const response = await uploadService.upload(file);
+      setForm({ ...form, imagem: response.data.fileUrl });
     } catch {
       toast({ title: "Erro ao enviar imagem.", variant: "destructive" });
     } finally {
@@ -53,10 +53,10 @@ export default function AdminProdutos() {
     const data = { ...form, preco: Number(form.preco) };
     try {
       if (modal === "create") {
-        await base44.entities.Product.create(data);
+        await productsService.create(data);
         toast({ title: "Produto cadastrado!" });
       } else {
-        await base44.entities.Product.update(form.id, data);
+        await productsService.update(form.id, data);
         toast({ title: "Produto atualizado!" });
       }
       setModal(null);
@@ -71,7 +71,7 @@ export default function AdminProdutos() {
   const handleDelete = async (id) => {
     if (!window.confirm("Tem certeza que deseja excluir este produto?")) return;
     try {
-      await base44.entities.Product.delete(id);
+      await productsService.delete(id);
       toast({ title: "Produto excluído." });
       load();
     } catch {

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { base44 } from "@/api/base44Client";
+import { settingsService } from "@/api/services";
 import { Phone, MessageCircle, MapPin, Clock, Mail, Truck } from "lucide-react";
 import { motion } from "framer-motion";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
@@ -9,8 +9,8 @@ export default function Contato() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    base44.entities.RestaurantSettings.list("-created_date", 1)
-      .then(([s]) => setSettings(s))
+    settingsService.get()
+      .then((res) => setSettings(res.data))
       .catch(() => {})
       .finally(() => setLoading(false));
   }, []);
@@ -79,7 +79,7 @@ export default function Contato() {
               </div>
               <div>
                 <h3 className="font-heading text-lg font-semibold text-[#290D04] mb-1">Horário</h3>
-                <p className="text-sm text-[#290D04]/70">{s.horario_funcionamento || "Terça a Domingo: 11h30 - 15h00 | 18h00 - 23h00"}</p>
+                <p className="text-sm text-[#290D04]/70">{s.horarioFuncionamento || "Terça a Domingo: 11h30 - 15h00 | 18h00 - 23h00"}</p>
               </div>
             </div>
 
@@ -90,7 +90,7 @@ export default function Contato() {
               <div>
                 <h3 className="font-heading text-lg font-semibold text-[#290D04] mb-1">Delivery</h3>
                 <a
-                  href={s.delivery_url || "https://delivery.granforno.com.br"}
+                  href={s.deliveryUrl || "https://delivery.granforno.com.br"}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-sm text-[#290D04]/70 hover:text-[#B68D40] transition-colors"
