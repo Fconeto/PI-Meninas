@@ -25,7 +25,8 @@ namespace GranForno.API.Controllers
                 return BadRequest(ApiResponse<object>.Fail("Nenhum arquivo enviado."));
 
             var fileUrl = await _storageService.UploadAsync(file);
-            return Ok(ApiResponse<UploadResponse>.Ok(new UploadResponse { FileUrl = fileUrl, FileName = file.FileName }, "Upload realizado com sucesso."));
+            var fullUrl = $"{Request.Scheme}://{Request.Host}{fileUrl}";
+            return Ok(ApiResponse<UploadResponse>.Ok(new UploadResponse { FileUrl = fullUrl, FileName = file.FileName }, "Upload realizado com sucesso."));
         }
     }
 }

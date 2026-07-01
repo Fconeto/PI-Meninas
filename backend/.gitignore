@@ -41,8 +41,8 @@ bld/
 *.sln.iml
 
 # Uploaded files
-wwwroot/uploads/*
-!wwwroot/uploads/.gitkeep
+src/GranForno.API/wwwroot/uploads/
+!src/GranForno.API/wwwroot/uploads/.gitkeep
 
 # User-specific config
 appsettings.Development.json
