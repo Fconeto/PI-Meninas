@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { galleryService } from "@/api/services";
+import { formatImageUrl } from "@/api/client";
 import { X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
@@ -64,10 +65,11 @@ export default function Galeria() {
               >
                 <div className="relative rounded-2xl overflow-hidden">
                   <img
-                    src={img.imagem}
+                    src={formatImageUrl(img.imagem)}
                     alt={img.titulo}
                     className="w-full h-auto object-contain rounded-2xl transition-transform duration-700 group-hover:scale-[1.02]"
                     loading="lazy"
+                    onError={(e) => { e.target.style.display = 'none' }}
                   />
                   <div className="absolute inset-0 bg-[#290D04]/0 group-hover:bg-[#290D04]/20 transition-colors duration-500 rounded-2xl flex items-end p-4">
                     <div className="opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-300">
@@ -105,9 +107,10 @@ export default function Galeria() {
               onClick={(e) => e.stopPropagation()}
             >
               <img
-                src={lightbox.imagem}
+                src={formatImageUrl(lightbox.imagem)}
                 alt={lightbox.titulo}
                 className="w-full h-full object-contain rounded-xl"
+                onError={(e) => { e.target.style.display = 'none' }}
               />
               <div className="text-center mt-4">
                 <p className="text-[#FAF3E2] font-heading text-xl">{lightbox.titulo}</p>

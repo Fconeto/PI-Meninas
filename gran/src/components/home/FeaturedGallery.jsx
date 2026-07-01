@@ -1,28 +1,18 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { base44 } from "@/api/base44Client";
+import { galleryService } from "@/api/services";
+import { formatImageUrl } from "@/api/client";
 import { motion } from "framer-motion";
 import SkeletonCard from "@/components/ui/SkeletonCard";
-
-const FALLBACK_IMAGES = [
-  { id: 1, imagem: "https://media.base44.com/images/public/6a432e114bb86f415a640016/bbb0c4a93_generated_23d13209.png", titulo: "Pasta Artesanal" },
-  { id: 2, imagem: "https://media.base44.com/images/public/6a432e114bb86f415a640016/9488d29d2_generated_1e103989.png", titulo: "Tiramisù" },
-  { id: 3, imagem: "https://media.base44.com/images/public/6a432e114bb86f415a640016/09ca9fdae_generated_bab7d7bf.png", titulo: "Tagliata" },
-  { id: 4, imagem: "https://media.base44.com/images/public/6a432e114bb86f415a640016/10dc5caeb_generated_86b8b615.png", titulo: "Bruschetta" },
-  { id: 5, imagem: "https://media.base44.com/images/public/6a432e114bb86f415a640016/0930cbaa2_generated_5381308e.png", titulo: "Vinho" },
-  { id: 6, imagem: "https://media.base44.com/images/public/6a432e114bb86f415a640016/1ec08be24_generated_526d99c6.png", titulo: "Massa Fresca" },
-  { id: 7, imagem: "https://media.base44.com/images/public/6a432e114bb86f415a640016/aae2ae6f0_generated_c634d1d0.png", titulo: "Forno a Lenha" },
-  { id: 8, imagem: "https://media.base44.com/images/public/6a432e114bb86f415a640016/59551f141_generated_5da9cc9d.png", titulo: "Ambiente" },
-];
 
 export default function FeaturedGallery() {
   const [images, setImages] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    base44.entities.GalleryImage.list("-created_date", 8)
-      .then((data) => setImages(data.length > 0 ? data : FALLBACK_IMAGES))
-      .catch(() => setImages(FALLBACK_IMAGES))
+    galleryService.getAll({ limit: 8 })
+      .then((res) => setImages(res.data || []))
+      .catch(() => setImages([]))
       .finally(() => setLoading(false));
   }, []);
 
@@ -62,10 +52,11 @@ export default function FeaturedGallery() {
                 }`}
               >
                 <img
-                  src={img.imagem}
+                  src={formatImageUrl(img.imagem)}
                   alt={img.titulo}
                   className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                   loading="lazy"
+                  onError={(e) => { e.target.style.display = 'none' }}
                 />
                 <div className="absolute inset-0 bg-[#290D04]/0 group-hover:bg-[#290D04]/30 transition-colors duration-500 flex items-end p-4">
                   <span className="text-[#FAF3E2] font-interactive text-sm font-medium opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-300">

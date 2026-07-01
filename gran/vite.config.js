@@ -15,5 +15,10 @@ export default defineConfig({
       visualEditAgent: true
     }),
     react(),
-  ]
+  ],
+  server: {
+    proxy: {
+      '/uploads': 'http://localhost:5000',
+    }
+  }
 });

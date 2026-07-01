@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { productsService, uploadService } from "@/api/services";
+import { formatImageUrl } from "@/api/client";
 import { Plus, Edit2, Trash2, X, Search } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
@@ -37,8 +38,8 @@ export default function AdminProdutos() {
     try {
       const response = await uploadService.upload(file);
       setForm({ ...form, imagem: response.data.fileUrl });
-    } catch {
-      toast({ title: "Erro ao enviar imagem.", variant: "destructive" });
+    } catch (err) {
+      toast({ title: err?.data?.message || "Erro ao enviar imagem.", variant: "destructive" });
     } finally {
       setUploading(false);
     }
@@ -61,8 +62,8 @@ export default function AdminProdutos() {
       }
       setModal(null);
       load();
-    } catch {
-      toast({ title: "Erro ao salvar produto.", variant: "destructive" });
+    } catch (err) {
+      toast({ title: err?.data?.message || "Erro ao salvar produto.", variant: "destructive" });
     } finally {
       setSaving(false);
     }
@@ -74,8 +75,8 @@ export default function AdminProdutos() {
       await productsService.delete(id);
       toast({ title: "Produto excluído." });
       load();
-    } catch {
-      toast({ title: "Erro ao excluir.", variant: "destructive" });
+    } catch (err) {
+      toast({ title: err?.data?.message || "Erro ao excluir.", variant: "destructive" });
     }
   };
 
@@ -105,7 +106,7 @@ export default function AdminProdutos() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {filtered.map((p) => (
             <div key={p.id} className="rounded-2xl bg-white/60 border border-[#290D04]/5 overflow-hidden">
-              {p.imagem && <img src={p.imagem} alt={p.nome} className="w-full h-40 object-cover" />}
+              {p.imagem && <img src={formatImageUrl(p.imagem)} alt={p.nome} className="w-full h-40 object-cover" onError={(e) => { e.target.style.display = 'none' }} />}
               <div className="p-5">
                 <div className="flex items-start justify-between mb-2">
                   <div>
@@ -167,7 +168,7 @@ export default function AdminProdutos() {
               </div>
               <div>
                 <label className="block text-sm font-interactive font-medium text-[#290D04]/80 mb-1">Imagem</label>
-                {form.imagem && <img src={form.imagem} alt="Preview" className="w-full h-32 object-cover rounded-xl mb-2" />}
+                {form.imagem && <img src={formatImageUrl(form.imagem)} alt="Preview" className="w-full h-32 object-cover rounded-xl mb-2" onError={(e) => { e.target.style.display = 'none' }} />}
                 <input type="file" accept="image/*" onChange={handleImageUpload} className="text-sm text-[#290D04]/60" />
                 {uploading && <LoadingSpinner size="sm" className="mt-2" />}
               </div>

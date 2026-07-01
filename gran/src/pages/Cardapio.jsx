@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { productsService } from "@/api/services";
+import { formatImageUrl } from "@/api/client";
 import { Search } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import SkeletonCard from "@/components/ui/SkeletonCard";
 
 const CATEGORIES = ["Todos", "Entradas", "Massas", "Carnes", "Sobremesas", "Bebidas"];
@@ -91,7 +91,7 @@ export default function Cardapio() {
                   {product.imagem && (
                     <div className="relative h-56 overflow-hidden">
                       <img
-                        src={product.imagem}
+                        src={formatImageUrl(product.imagem)}
                         alt={product.nome}
                         className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                         loading="lazy"

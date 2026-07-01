@@ -1,23 +1,32 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Clock, MapPin, Phone, MessageCircle, Truck } from "lucide-react";
 import { motion } from "framer-motion";
+import { settingsService } from "@/api/services";
 
 export default function InfoSection() {
+  const [settings, setSettings] = React.useState(null);
+
+  useEffect(() => {
+      settingsService.get()
+        .then((res) => setSettings(res.data))
+        .catch(() => {});
+    }, []);
+
   const infoCards = [
     {
       icon: Clock,
       title: "Horário",
-      lines: ["Terça a Sexta: 11h30 - 15h00 | 18h00 - 23h00", "Sábado e Domingo: 11h30 - 23h00", "Segunda: Fechado"],
+      lines: [settings?.horario || "Segunda a Domingo: 18:00–23:30"],
     },
     {
       icon: MapPin,
       title: "Endereço",
-      lines: ["Rua das Oliveiras, 250", "Vila Madalena", "São Paulo - SP, 05434-000"],
+      lines: [settings?.endereco || "Rua Santos Dumont, 327", "Crateús - CE, 63700-034"],
     },
     {
       icon: Phone,
       title: "Telefone",
-      lines: ["(11) 3456-7890"],
+      lines: [settings?.telefone || "(88) 99619-358"],
     },
   ];
 

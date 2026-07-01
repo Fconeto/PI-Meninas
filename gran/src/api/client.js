@@ -116,3 +116,11 @@ class ApiClient {
 }
 
 export const api = new ApiClient();
+
+const API_ORIGIN = new URL(API_BASE).origin;
+
+export function formatImageUrl(url) {
+  if (!url) return '';
+  if (url.startsWith('http://') || url.startsWith('https://')) return url;
+  return `${API_ORIGIN}${url}`;
+}

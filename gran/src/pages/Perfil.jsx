@@ -39,11 +39,6 @@ export default function Perfil() {
     return diff > 24 * 60 * 60 * 1000;
   };
 
-  useEffect(() => {
-    console.log("User:", user);
-    console.log("Reservations:", reservations);
-  }, [user, reservations]);
-
   const handleCancel = async (id) => {
     if (!window.confirm("Tem certeza que deseja cancelar esta reserva?")) return;
     try {

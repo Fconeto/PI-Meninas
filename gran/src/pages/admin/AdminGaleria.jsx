@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { galleryService, uploadService } from "@/api/services";
+import { formatImageUrl } from "@/api/client";
 import { Plus, Edit2, Trash2, X } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
@@ -50,8 +51,8 @@ export default function AdminGaleria() {
         const response = await uploadService.upload(files[0]);
         setForm({ ...form, imagem: response.data.fileUrl });
       }
-    } catch {
-      toast({ title: "Erro ao enviar imagem.", variant: "destructive" });
+    } catch (err) {
+      toast({ title: err?.data?.message || "Erro ao enviar imagem.", variant: "destructive" });
     } finally {
       setUploading(false);
     }
@@ -73,8 +74,8 @@ export default function AdminGaleria() {
       }
       setModal(null);
       load();
-    } catch {
-      toast({ title: "Erro ao salvar.", variant: "destructive" });
+    } catch (err) {
+      toast({ title: err?.data?.message || "Erro ao salvar.", variant: "destructive" });
     } finally {
       setSaving(false);
     }
@@ -86,8 +87,8 @@ export default function AdminGaleria() {
       await galleryService.delete(id);
       toast({ title: "Imagem excluída." });
       load();
-    } catch {
-      toast({ title: "Erro ao excluir.", variant: "destructive" });
+    } catch (err) {
+      toast({ title: err?.data?.message || "Erro ao excluir.", variant: "destructive" });
     }
   };
 
@@ -110,7 +111,7 @@ export default function AdminGaleria() {
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {images.map((img) => (
             <div key={img.id} className="relative group rounded-2xl overflow-hidden">
-              <img src={img.imagem} alt={img.titulo} className="w-full h-48 object-cover" />
+              <img src={formatImageUrl(img.imagem)} alt={img.titulo} className="w-full h-48 object-cover" onError={(e) => { e.target.style.display = 'none' }} />
               <div className="absolute inset-0 bg-[#290D04]/0 group-hover:bg-[#290D04]/60 transition-colors duration-300 flex items-center justify-center gap-3">
                 <button onClick={() => openEdit(img)} className="opacity-0 group-hover:opacity-100 w-10 h-10 rounded-full bg-white/20 text-white hover:bg-white/30 flex items-center justify-center transition-all">
                   <Edit2 className="w-4 h-4" />
@@ -155,7 +156,7 @@ export default function AdminGaleria() {
                 <label className="block text-sm font-interactive font-medium text-[#290D04]/80 mb-1">
                   {modal === "create" ? "Imagens * (upload múltiplo)" : "Imagem *"}
                 </label>
-                {form.imagem && <img src={form.imagem} alt="Preview" className="w-full h-40 object-cover rounded-xl mb-2" />}
+                {form.imagem && <img src={formatImageUrl(form.imagem)} alt="Preview" className="w-full h-40 object-cover rounded-xl mb-2" onError={(e) => { e.target.style.display = 'none' }} />}
                 <input type="file" accept="image/*" multiple={modal === "create"} onChange={handleImageUpload} className="text-sm text-[#290D04]/60" />
                 {uploading && <LoadingSpinner size="sm" className="mt-2" />}
               </div>

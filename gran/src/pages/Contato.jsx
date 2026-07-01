@@ -109,13 +109,14 @@ export default function Contato() {
             className="rounded-2xl overflow-hidden h-[400px] md:h-full min-h-[400px] border border-[#290D04]/5"
           >
             <iframe
-              src="https://www.openstreetmap.org/export/embed.html?bbox=-46.6980%2C-23.5580%2C-46.6850%2C-23.5480&layer=mapnik&marker=-23.5530%2C-46.6915"
+              src="https://www.google.com/maps?q=-5.1751463,-40.6676869&z=16&output=embed"
               width="100%"
               height="100%"
               style={{ border: 0 }}
               allowFullScreen
               loading="lazy"
               title="Localização do Gran Forno e Cozinha"
+              referrerPolicy="no-referrer-when-downgrade"
             />
           </motion.div>
         </div>
